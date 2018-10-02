@@ -106,7 +106,7 @@ abstract class HttpClient {
         request.setMethod("DELETE");
         return this.send(request);
     }
-    
+
     public CompletableFuture<HttpResponse> delete(String url, HttpRequest options) {
         options.setUrl(url);
         options.setMethod("DELETE");

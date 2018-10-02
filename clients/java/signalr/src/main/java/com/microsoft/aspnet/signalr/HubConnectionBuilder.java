@@ -23,27 +23,6 @@ public class HubConnectionBuilder {
         return new HubConnectionBuilder(url);
     }
 
-//    public HubConnectionBuilder withUrl(String url) {
-//        if (url == null || url.isEmpty()) {
-//            throw new IllegalArgumentException("A valid url is required.");
-//        }
-//
-//        this.url = url;
-//        return this;
-//    }
-
-    public HubConnectionBuilder withTransport(Transport transport) {
-        this.transport = transport;
-        return this;
-    }
-
-//    public HubConnectionBuilder withOptions(HttpConnectionOptions options) {
-//        this.url = url;
-//        this.transport = options.getTransport();
-//        this.skipNegotiate = options.getSkipNegotiate();
-//        return this;
-//    }
-
     public HubConnectionBuilder withLogLevel(Level logLevel) {
         this.logLevel = logLevel;
         return this;
@@ -54,6 +33,12 @@ public class HubConnectionBuilder {
         return this;
     }
 
+    // Transport is not public API, so this method is not public either
+    HubConnectionBuilder withTransport(Transport transport) {
+        this.transport = transport;
+        return this;
+    }
+
     // For testing purposes only
     HubConnectionBuilder withHttpClient(HttpClient client) {
         this.client = client;
@@ -61,9 +46,6 @@ public class HubConnectionBuilder {
     }
 
     public HubConnection build() {
-        if (this.url == null) {
-            throw new RuntimeException("The 'HubConnectionBuilder.withUrl' method must be called before building the connection.");
-        }
         return new HubConnection(url, transport, skipNegotiate, logLevel, client);
     }
 }
