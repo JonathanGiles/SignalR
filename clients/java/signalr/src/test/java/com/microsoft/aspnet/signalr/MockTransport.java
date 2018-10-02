@@ -11,12 +11,12 @@ class MockTransport implements Transport {
     private ArrayList<String> sentMessages = new ArrayList<>();
 
     @Override
-    public CompletableFuture start() {
+    public CompletableFuture<Void> start() {
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public CompletableFuture send(String message) {
+    public CompletableFuture<Void> send(String message) {
         sentMessages.add(message);
         return CompletableFuture.completedFuture(null);
     }
@@ -32,7 +32,7 @@ class MockTransport implements Transport {
     }
 
     @Override
-    public CompletableFuture stop() {
+    public CompletableFuture<Void> stop() {
         return CompletableFuture.completedFuture(null);
     }
 
@@ -41,6 +41,6 @@ class MockTransport implements Transport {
     }
 
     public String[] getSentMessages() {
-        return sentMessages.toArray(new String[sentMessages.size()]);
+        return sentMessages.toArray(new String[] { });
     }
 }

@@ -3,7 +3,7 @@
 
 package com.microsoft.aspnet.signalr;
 
-public enum TransferFormat {
+enum TransferFormat {
     TEXT,
     BINARY
 }

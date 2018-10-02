@@ -5,12 +5,12 @@ package com.microsoft.aspnet.signalr;
 
 import java.util.List;
 
-public class Subscription {
-    private CallbackMap handlers;
-    private InvocationHandler handler;
-    private String target;
+public final class Subscription {
+    private final CallbackMap handlers;
+    private final InvocationHandler handler;
+    private final String target;
 
-    public Subscription(CallbackMap handlers, InvocationHandler handler, String target) {
+    Subscription(CallbackMap handlers, InvocationHandler handler, String target) {
         this.handlers = handlers;
         this.handler = handler;
         this.target = target;

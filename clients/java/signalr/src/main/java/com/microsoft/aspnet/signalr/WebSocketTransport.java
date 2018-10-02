@@ -3,15 +3,16 @@
 
 package com.microsoft.aspnet.signalr;
 
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 class WebSocketTransport implements Transport {
+    private final static Logger LOGGER = Logger.getLogger(WebSocketTransport.class.getName());
+
     private WebSocketWrapper webSocketClient;
     private OnReceiveCallBack onReceiveCallBack;
     private String url;
-    private Logger logger;
     private HttpClient client;
     private Map<String, String> headers;
 
@@ -20,9 +21,8 @@ class WebSocketTransport implements Transport {
     private static final String WS = "ws";
     private static final String WSS = "wss";
 
-    public WebSocketTransport(String url, Map<String, String> headers, HttpClient client, Logger logger) throws URISyntaxException {
+    public WebSocketTransport(String url, Map<String, String> headers, HttpClient client) {
         this.url = formatUrl(url);
-        this.logger = logger;
         this.client = client;
         this.headers = headers;
     }
@@ -31,7 +31,7 @@ class WebSocketTransport implements Transport {
         return url;
     }
 
-    private String formatUrl(String url) throws URISyntaxException {
+    private String formatUrl(String url) {
         if (url.startsWith(HTTPS)) {
             url = WSS + url.substring(HTTPS.length());
         } else if (url.startsWith(HTTP)) {
@@ -43,11 +43,11 @@ class WebSocketTransport implements Transport {
 
     @Override
     public CompletableFuture<Void> start() {
-        logger.log(LogLevel.Debug, "Starting Websocket connection.");
-        this.webSocketClient = client.createWebSocket(this.url.toString(), this.headers);
-        this.webSocketClient.setOnReceive((message) -> onReceive(message));
-        this.webSocketClient.setOnClose((code, reason) -> onClose(code, reason));
-        return webSocketClient.start().thenRun(() -> logger.log(LogLevel.Information, "WebSocket transport connected to: %s.", this.url));
+        LOGGER.info("Starting Websocket connection.");
+        this.webSocketClient = client.createWebSocket(this.url, this.headers);
+        this.webSocketClient.setOnReceive(this::onReceive);
+        this.webSocketClient.setOnClose(this::onClose);
+        return webSocketClient.start().thenRun(() -> LOGGER.info("WebSocket transport connected to: " + this.url + "."));
     }
 
     @Override
@@ -58,7 +58,7 @@ class WebSocketTransport implements Transport {
     @Override
     public void setOnReceive(OnReceiveCallBack callback) {
         this.onReceiveCallBack = callback;
-        logger.log(LogLevel.Debug, "OnReceived callback has been set");
+        LOGGER.info("OnReceived callback has been set");
     }
 
     @Override
@@ -68,11 +68,10 @@ class WebSocketTransport implements Transport {
 
     @Override
     public CompletableFuture<Void> stop() {
-        return webSocketClient.stop().whenComplete((i, j) -> logger.log(LogLevel.Information, "WebSocket connection stopped."));
+        return webSocketClient.stop().whenComplete((i, j) -> LOGGER.info("WebSocket connection stopped."));
     }
 
     void onClose(int code, String reason) {
-        logger.log(LogLevel.Information, "WebSocket connection stopping with " +
-                "code %d and reason '%s'.", code, reason);
+        LOGGER.info("WebSocket connection stopping with code " + code + " and reason '" + reason + "'.");
     }
 }

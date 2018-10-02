@@ -3,55 +3,59 @@
 
 package com.microsoft.aspnet.signalr;
 
+import java.util.logging.Level;
+
 public class HubConnectionBuilder {
-    private String url;
+    private final String url;
     private Transport transport;
-    private Logger logger;
     private boolean skipNegotiate;
     private HttpClient client;
+    private Level logLevel;
 
-    public HubConnectionBuilder withUrl(String url) {
-        if (url == null || url.isEmpty()) {
-            throw new IllegalArgumentException("A valid url is required.");
-        }
-
+    private HubConnectionBuilder(String url) {
         this.url = url;
-        return this;
     }
 
-    public HubConnectionBuilder withUrl(String url, Transport transport) {
+    public static HubConnectionBuilder create(String url) {
         if (url == null || url.isEmpty()) {
             throw new IllegalArgumentException("A valid url is required.");
         }
-        this.url = url;
+        return new HubConnectionBuilder(url);
+    }
+
+//    public HubConnectionBuilder withUrl(String url) {
+//        if (url == null || url.isEmpty()) {
+//            throw new IllegalArgumentException("A valid url is required.");
+//        }
+//
+//        this.url = url;
+//        return this;
+//    }
+
+    public HubConnectionBuilder withTransport(Transport transport) {
         this.transport = transport;
         return this;
     }
 
-    public HubConnectionBuilder withUrl(String url, HttpConnectionOptions options) {
-        this.url = url;
-        this.transport = options.getTransport();
-        if (options.getLogger() != null) {
-            this.logger = options.getLogger();
-        } else if (options.getLoglevel() != null) {
-            this.logger = new ConsoleLogger(options.getLoglevel());
-        }
-        this.skipNegotiate = options.getSkipNegotiate();
+//    public HubConnectionBuilder withOptions(HttpConnectionOptions options) {
+//        this.url = url;
+//        this.transport = options.getTransport();
+//        this.skipNegotiate = options.getSkipNegotiate();
+//        return this;
+//    }
+
+    public HubConnectionBuilder withLogLevel(Level logLevel) {
+        this.logLevel = logLevel;
         return this;
     }
 
-    public HubConnectionBuilder configureLogging(LogLevel logLevel) {
-        this.logger = new ConsoleLogger(logLevel);
-        return this;
-    }
-
-    public HubConnectionBuilder configureLogging(Logger logger) {
-        this.logger = logger;
+    public HubConnectionBuilder withSkipNegotiate(boolean skipNegotiate) {
+        this.skipNegotiate = skipNegotiate;
         return this;
     }
 
     // For testing purposes only
-    HubConnectionBuilder configureHttpClient(HttpClient client) {
+    HubConnectionBuilder withHttpClient(HttpClient client) {
         this.client = client;
         return this;
     }
@@ -60,6 +64,6 @@ public class HubConnectionBuilder {
         if (this.url == null) {
             throw new RuntimeException("The 'HubConnectionBuilder.withUrl' method must be called before building the connection.");
         }
-        return new HubConnection(url, transport, logger, skipNegotiate, client);
+        return new HubConnection(url, transport, skipNegotiate, logLevel, client);
     }
 }

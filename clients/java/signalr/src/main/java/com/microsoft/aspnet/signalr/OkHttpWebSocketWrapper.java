@@ -6,6 +6,8 @@ package com.microsoft.aspnet.signalr;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -15,21 +17,21 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
 class OkHttpWebSocketWrapper extends WebSocketWrapper {
+    private final static Logger LOGGER = Logger.getLogger(OkHttpWebSocketWrapper.class.getName());
+
     private WebSocket websocketClient;
     private String url;
     private Map<String, String> headers;
     private OkHttpClient client;
-    private Logger logger;
     private OnReceiveCallBack onReceive;
     private BiConsumer<Integer, String> onClose;
     private CompletableFuture<Void> startFuture = new CompletableFuture<>();
     private CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
-    public OkHttpWebSocketWrapper(String url, Map<String, String> headers, OkHttpClient client, Logger logger) {
+    public OkHttpWebSocketWrapper(String url, Map<String, String> headers, OkHttpClient client) {
         this.url = url;
         this.headers = headers;
         this.client = client;
-        this.logger = logger;
     }
 
     @Override
@@ -95,7 +97,7 @@ class OkHttpWebSocketWrapper extends WebSocketWrapper {
 
         @Override
         public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-            logger.log(LogLevel.Error, "Error: %s.", t.getMessage());
+            LOGGER.log(Level.WARNING, "Error: %s.", t.getMessage());
             closeFuture.completeExceptionally(new RuntimeException());
             checkStartFailure();
         }
@@ -105,7 +107,7 @@ class OkHttpWebSocketWrapper extends WebSocketWrapper {
             // exceptionally.
             if (!startFuture.isDone()) {
                 String errorMessage = "There was an error starting the Websockets transport.";
-                logger.log(LogLevel.Debug, errorMessage);
+                LOGGER.log(Level.INFO, errorMessage);
                 startFuture.completeExceptionally(new RuntimeException(errorMessage));
             }
         }

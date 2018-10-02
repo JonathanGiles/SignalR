@@ -86,7 +86,7 @@ class JsonHubProtocol implements HubProtocol {
                         }
                         break;
                     case "headers":
-                        throw new HubException("Headers not implemented yet.");
+                        throw new RuntimeException("Headers not implemented yet.");
                     default:
                         // Skip unknown property, allows new clients to still work with old protocols
                         reader.skipValue();

@@ -25,7 +25,7 @@ class WebSocketTransportUrlFormatTest {
     @ParameterizedTest
     @MethodSource("protocols")
     public void checkWebsocketUrlProtocol(String url, String expectedUrl) throws URISyntaxException {
-        WebSocketTransport webSocketTransport = new WebSocketTransport(url, new HashMap<>(), new TestHttpClient(), new NullLogger());
+        WebSocketTransport webSocketTransport = new WebSocketTransport(url, new HashMap<>(), new TestHttpClient());
         assertEquals(expectedUrl, webSocketTransport.getUrl());
     }
 }

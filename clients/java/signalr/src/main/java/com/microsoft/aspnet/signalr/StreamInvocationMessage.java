@@ -3,9 +3,9 @@
 
 package com.microsoft.aspnet.signalr;
 
-class StreamInvocationMessage extends InvocationMessage {
+final class StreamInvocationMessage extends InvocationMessage {
 
-    int type = HubMessageType.STREAM_INVOCATION.value;
+    private final int type = HubMessageType.STREAM_INVOCATION.value;
 
     public StreamInvocationMessage(String invocationId, String target, Object[] arguments) {
         super(invocationId, target, arguments);

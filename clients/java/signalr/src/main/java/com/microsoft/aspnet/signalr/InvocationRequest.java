@@ -19,7 +19,7 @@ class InvocationRequest {
         if (completion.getResult() != null) {
             pendingCall.complete(completion.getResult());
         } else {
-            pendingCall.completeExceptionally(new HubException(completion.getError()));
+            pendingCall.completeExceptionally(new RuntimeException(completion.getError()));
         }
     }
 

@@ -24,10 +24,8 @@ import okhttp3.ResponseBody;
 
 class DefaultHttpClient extends HttpClient {
     private OkHttpClient client;
-    private Logger logger;
 
-    public DefaultHttpClient(Logger logger) {
-        this.logger = logger;
+    DefaultHttpClient() {
         this.client = new OkHttpClient.Builder().cookieJar(new CookieJar() {
             private List<Cookie> cookieList = new ArrayList<>();
             private Lock cookieLock = new ReentrantLock();
@@ -82,19 +80,19 @@ class DefaultHttpClient extends HttpClient {
     @Override
     public CompletableFuture<HttpResponse> send(HttpRequest httpRequest) {
         Request.Builder requestBuilder = new Request.Builder().url(httpRequest.getUrl());
-        if (httpRequest.getMethod() == "GET") {
-            requestBuilder.get();
-        } else if (httpRequest.getMethod() == "POST") {
-            RequestBody body = RequestBody.create(null, new byte[] {});
-            requestBuilder.post(body);
-        } else if (httpRequest.getMethod() == "DELETE") {
-            requestBuilder.delete();
+
+        switch (httpRequest.getMethod()) {
+            case "GET": requestBuilder.get(); break;
+            case "POST": {
+                RequestBody body = RequestBody.create(null, new byte[] {});
+                requestBuilder.post(body);
+                break;
+            }
+            case "DELETE": requestBuilder.delete(); break;
         }
 
         if (httpRequest.getHeaders() != null) {
-            httpRequest.getHeaders().forEach((key, value) -> {
-                requestBuilder.addHeader(key, value);
-            });
+            httpRequest.getHeaders().forEach(requestBuilder::addHeader);
         }
 
         Request request = requestBuilder.build();
@@ -121,6 +119,6 @@ class DefaultHttpClient extends HttpClient {
 
     @Override
     public WebSocketWrapper createWebSocket(String url, Map<String, String> headers) {
-        return new OkHttpWebSocketWrapper(url, headers, client, logger);
+        return new OkHttpWebSocketWrapper(url, headers, client);
     }
 }

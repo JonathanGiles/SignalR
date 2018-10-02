@@ -3,6 +3,7 @@
 
 package com.microsoft.aspnet.signalr;
 
-public interface ActionBase {
+@FunctionalInterface
+interface ActionBase {
     void invoke(Object ... params);
 }
